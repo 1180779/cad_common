@@ -1,0 +1,156 @@
+/* cad_common application stylesheet.
+   Token placeholders are substituted at apply time by cad_common::style::apply();
+   the token values live in Style.cxx (light and dark sets). */
+
+/* Central viewport: the caller gives its widget objectName "centralViewport". */
+QFrame#centralViewport {
+    background-color: {{central}};
+    border: 1px solid {{border}};
+}
+
+/* Panel window. */
+QFrame#panelSlot {
+    background-color: {{base}};
+    border: 1px solid {{border}};
+}
+
+/* Panel header strip. */
+QFrame#panelHeader {
+    background-color: {{header}};
+    border-bottom: 1px solid {{border}};
+}
+
+QFrame#panelHeader QLabel {
+    font-weight: bold;
+}
+
+QToolButton#panelCloseButton {
+    border: none;
+    background: transparent;
+    padding: 2px 6px;
+}
+
+QToolButton#panelCloseButton:hover {
+    background-color: {{midlight}};
+    border: none;
+}
+
+QToolButton#panelCloseButton:pressed {
+    background-color: {{mid}};
+    border: none;
+}
+
+/* Resize handles between panels and the central widget. */
+QSplitter::handle {
+    background-color: {{handle}};
+}
+
+/* Base controls. */
+QPushButton {
+    background-color: {{button}};
+    border: 1px solid {{border}};
+    border-radius: {{radius}};
+    padding: 4px 10px;
+}
+
+QPushButton:hover {
+    background-color: {{midlight}};
+}
+
+QPushButton:pressed {
+    background-color: {{mid}};
+    border-color: {{border}};
+}
+
+QPushButton:checked {
+    background-color: {{highlight}};
+    color: {{highlightedText}};
+    border-color: {{highlight}};
+}
+
+QPushButton:checked:hover {
+    background-color: {{highlightHover}};
+    border-color: {{highlightHover}};
+}
+
+QPushButton:checked:pressed {
+    background-color: {{highlightPressed}};
+    border-color: {{highlightPressed}};
+}
+
+QToolButton {
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: {{radius}};
+    padding: 2px;
+}
+
+QToolButton:hover {
+    background-color: {{midlight}};
+    border-color: {{border}};
+}
+
+QToolButton:pressed {
+    background-color: {{mid}};
+    border-color: {{border}};
+}
+
+QSpinBox,
+QDoubleSpinBox {
+    background-color: {{base}};
+    border: 1px solid {{border}};
+    border-radius: {{radius}};
+    padding: 2px 4px;
+}
+
+/* Frameless window title bar (menu + window controls). */
+QWidget#windowTitleBar {
+    background-color: {{window}};
+    border-bottom: 1px solid {{border}};
+}
+
+QMenuBar {
+    background: transparent;
+}
+
+QMenuBar::item {
+    background: transparent;
+    padding: 4px 10px;
+}
+
+QMenuBar::item:selected {
+    background-color: {{midlight}};
+}
+
+QToolButton#windowButton {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+}
+
+QToolButton#windowButton:hover {
+    background-color: {{midlight}};
+}
+
+/* Dropdown menus. */
+QMenu {
+    background-color: {{base}};
+    border: 1px solid {{border}};
+    padding: 4px 0;
+}
+
+QMenu::item {
+    padding: 6px 24px 6px 30px;
+}
+
+QMenu::item:selected {
+    background-color: {{highlight}};
+    color: {{highlightedText}};
+}
+
+QMenu::indicator {
+    width: 14px;
+    height: 14px;
+    left: 10px;
+}
