@@ -14,6 +14,7 @@
 #include <string>
 #include <utility>
 
+#include <cad_common/Font.hxx>
 #include <cad_common/PanelSection.hxx>
 #include <cad_common/PanelWidget.hxx>
 #include <cad_common/SectionHost.hxx>
@@ -107,6 +108,7 @@ int main(int argc, char* argv[]) {
     const QStringList args = QApplication::arguments();
     const bool forceDark = args.contains(QStringLiteral("--dark"));
     cad_common::style::apply(forceDark ? cad_common::StyleMode::Dark : cad_common::StyleMode::System);
+    [[maybe_unused]] const QString appFontFamily = cad_common::applyAppFont();
 
     auto* central = new QFrame;
     central->setObjectName(QStringLiteral("centralViewport"));
@@ -210,6 +212,7 @@ int main(int argc, char* argv[]) {
         };
 
         check(host->acceptDrops(), "section host accepts drops (removes drop warning)");
+        check(!appFontFamily.isEmpty(), "JetBrains Mono font loaded");
         check(parametersAction->isChecked(), "parameters action checked initially");
         check(plotsAction->isChecked(), "plots action checked initially");
         check(!controlsAction->isChecked(), "controls action unchecked initially");

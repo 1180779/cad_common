@@ -9,4 +9,8 @@
         <file alias="window-maximize.svg">icons/window-maximize.svg</file>
         <file alias="window-restore.svg">icons/window-restore.svg</file>
     </qresource>
+    <qresource prefix="/cad_common/fonts">
+        <file alias="JetBrainsMono-Regular.ttf">fonts/JetBrainsMono-Regular.ttf</file>
+        <file alias="JetBrainsMono-Bold.ttf">fonts/JetBrainsMono-Bold.ttf</file>
+    </qresource>
 </RCC>
