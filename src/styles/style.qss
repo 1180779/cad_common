@@ -1,65 +1,77 @@
-/* cad_common application stylesheet.
-   Token placeholders are substituted at apply time by cad_common::style::apply();
-   the token values live in Style.cxx (light and dark sets). */
 
-/* Central viewport: the caller gives its widget objectName "centralViewport". */
+/* central viewport */
+
 QFrame#centralViewport {
     background-color: {{central}};
     border: 1px solid {{border}};
+    border-radius: {{radius}};
 }
 
-/* Panel window. */
+/* panel window */
+
 QFrame#panelSlot {
     background-color: {{base}};
     border: 1px solid {{border}};
+    border-radius: {{radius}};
 }
 
-/* Panel header strip. */
+/* panel header strip */
+
 QFrame#panelHeader {
     background-color: {{header}};
     border-bottom: 1px solid {{border}};
+    border-top-left-radius: {{radius}};
+    border-top-right-radius: {{radius}};
 }
 
 QFrame#panelHeader QLabel {
     font-weight: bold;
+    color: {{text}};
 }
 
 QToolButton#panelCloseButton {
     border: none;
     background: transparent;
+    border-radius: {{smallRadius}};
     padding: 2px 6px;
+    color: {{placeholderText}};
 }
 
 QToolButton#panelCloseButton:hover {
     background-color: {{midlight}};
-    border: none;
+    color: {{text}};
 }
 
 QToolButton#panelCloseButton:pressed {
     background-color: {{mid}};
-    border: none;
 }
 
-/* Resize handles between panels and the central widget. */
+/* Resize handles: invisible gaps, accent on hover. */
 QSplitter::handle {
-    background-color: {{handle}};
+    background-color: transparent;
 }
 
-/* Base controls. */
+QSplitter::handle:hover {
+    background-color: {{highlight}};
+}
+
+/* base buttons */
+
 QPushButton {
     background-color: {{button}};
     border: 1px solid {{border}};
-    border-radius: {{radius}};
-    padding: 4px 10px;
+    border-radius: {{smallRadius}};
+    padding: 5px 14px;
+    color: {{buttonText}};
 }
 
 QPushButton:hover {
     background-color: {{midlight}};
+    border-color: {{mid}};
 }
 
 QPushButton:pressed {
     background-color: {{mid}};
-    border-color: {{border}};
 }
 
 QPushButton:checked {
@@ -78,11 +90,15 @@ QPushButton:checked:pressed {
     border-color: {{highlightPressed}};
 }
 
+QPushButton:focus {
+    border-color: {{highlight}};
+}
+
 QToolButton {
-    background-color: transparent;
+    background: transparent;
     border: 1px solid transparent;
-    border-radius: {{radius}};
-    padding: 2px;
+    border-radius: {{smallRadius}};
+    padding: 3px;
 }
 
 QToolButton:hover {
@@ -92,18 +108,96 @@ QToolButton:hover {
 
 QToolButton:pressed {
     background-color: {{mid}};
-    border-color: {{border}};
 }
+
+/* inputs */
 
 QSpinBox,
 QDoubleSpinBox {
     background-color: {{base}};
     border: 1px solid {{border}};
-    border-radius: {{radius}};
-    padding: 2px 4px;
+    border-radius: {{smallRadius}};
+    padding: 3px 6px;
+    color: {{text}};
+    selection-background-color: {{highlight}};
+    selection-color: {{highlightedText}};
 }
 
-/* Frameless window title bar (menu + window controls). */
+QSpinBox:focus,
+QDoubleSpinBox:focus {
+    border-color: {{highlight}};
+}
+
+/* slim scrollbars */
+
+QScrollBar:vertical {
+    background: transparent;
+    width: 10px;
+    margin: 0;
+}
+
+QScrollBar::handle:vertical {
+    background: {{mid}};
+    border-radius: 4px;
+    min-height: 24px;
+    margin: 2px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: {{dark}};
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0;
+    background: transparent;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: transparent;
+}
+
+QScrollBar:horizontal {
+    background: transparent;
+    height: 10px;
+    margin: 0;
+}
+
+QScrollBar::handle:horizontal {
+    background: {{mid}};
+    border-radius: 4px;
+    min-width: 24px;
+    margin: 2px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: {{dark}};
+}
+
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    width: 0;
+    background: transparent;
+}
+
+QScrollBar::add-page:horizontal,
+QScrollBar::sub-page:horizontal {
+    background: transparent;
+}
+
+/* tooltips */
+
+QToolTip {
+    background-color: {{base}};
+    color: {{text}};
+    border: 1px solid {{border}};
+    border-radius: {{smallRadius}};
+    padding: 4px 8px;
+}
+
+/* frameless window title bar (menu + window controls) */
+
 QWidget#windowTitleBar {
     background-color: {{window}};
     border-bottom: 1px solid {{border}};
@@ -115,7 +209,8 @@ QMenuBar {
 
 QMenuBar::item {
     background: transparent;
-    padding: 4px 10px;
+    padding: 5px 10px;
+    border-radius: {{smallRadius}};
 }
 
 QMenuBar::item:selected {
@@ -125,23 +220,39 @@ QMenuBar::item:selected {
 QToolButton#windowButton {
     background: transparent;
     border: none;
-    border-radius: 0;
+    border-radius: {{smallRadius}};
     padding: 0;
+    margin: 3px;
 }
 
 QToolButton#windowButton:hover {
     background-color: {{midlight}};
 }
 
-/* Dropdown menus. */
+QToolButton#windowButton:pressed {
+    background-color: {{mid}};
+}
+
+QToolButton#windowButton[close="true"]:hover {
+    background-color: {{dangerHover}};
+}
+
+QToolButton#windowButton[close="true"]:pressed {
+    background-color: {{dangerPressed}};
+}
+
+/* dropdown menus */
+
 QMenu {
     background-color: {{base}};
     border: 1px solid {{border}};
-    padding: 4px 0;
+    border-radius: {{radius}};
+    padding: 0;
 }
 
 QMenu::item {
-    padding: 6px 24px 6px 30px;
+    padding: 7px 26px 7px 32px;
+    border-radius: {{smallRadius}};
 }
 
 QMenu::item:selected {
@@ -152,5 +263,5 @@ QMenu::item:selected {
 QMenu::indicator {
     width: 14px;
     height: 14px;
-    left: 10px;
+    left: 11px;
 }

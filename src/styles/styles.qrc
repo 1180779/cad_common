@@ -3,4 +3,10 @@
     <qresource prefix="/cad_common/styles">
         <file alias="style.qss">style.qss</file>
     </qresource>
+    <qresource prefix="/cad_common/icons">
+        <file alias="window-close.svg">icons/window-close.svg</file>
+        <file alias="window-minimize.svg">icons/window-minimize.svg</file>
+        <file alias="window-maximize.svg">icons/window-maximize.svg</file>
+        <file alias="window-restore.svg">icons/window-restore.svg</file>
+    </qresource>
 </RCC>
