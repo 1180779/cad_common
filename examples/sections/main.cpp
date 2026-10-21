@@ -3,17 +3,12 @@
  * radoslaw.glasek@theworldlooksback.dev
  */
 
+#include <QAction>
 #include <QApplication>
-#include <QBoxLayout>
-#include <QDebug>
-#include <QFrame>
-#include <QHBoxLayout>
 #include <QLabel>
-#include <QPixmap>
-#include <QPushButton>
+#include <QMenuBar>
 #include <QSignalBlocker>
 #include <QTimer>
-#include <QVBoxLayout>
 #include <QWidget>
 
 #include <string>
@@ -23,6 +18,7 @@
 #include <cad_common/PanelWidget.hxx>
 #include <cad_common/SectionHost.hxx>
 #include <cad_common/Style.hxx>
+#include <cad_common/TitleBar.hxx>
 
 namespace {
 
@@ -37,13 +33,6 @@ public:
     }
 };
 
-QPushButton* addToggle(QBoxLayout* layout, const QString& text) {
-    auto* button = new QPushButton(text);
-    button->setCheckable(true);
-    layout->addWidget(button);
-    return button;
-}
-
 /// @brief The four sections of @p host, in a fixed order
 struct SectionSet {
     PanelSection* left;
@@ -52,19 +41,19 @@ struct SectionSet {
     PanelSection* bottom;
 };
 
-SectionSet sectionsOf(SectionHost* host) {
+SectionSet sectionsOf(const SectionHost* host) {
     return {
-        host->section(SectionSide::Left),
-        host->section(SectionSide::Right),
-        host->section(SectionSide::Top),
-        host->section(SectionSide::Bottom),
+        .left = host->section(SectionSide::Left),
+        .right = host->section(SectionSide::Right),
+        .top = host->section(SectionSide::Top),
+        .bottom = host->section(SectionSide::Bottom),
     };
 }
 
-/// @brief Keep @p button checked exactly while @p id is open in any section of
-/// @p host; clicking opens/closes the panel wherever it is currently registered
-/// so drag-and-drop moves stay in sync
-void wirePanelToggle(QPushButton* button, SectionHost* host, const PanelId& id) {
+/// @brief Keep @p action checked exactly while @p id is open in any section of
+/// @p host; triggering opens/closes the panel wherever it is registered so
+/// drag-and-drop moves stay in sync
+void wirePanelToggle(QAction* action, const SectionHost* host, const PanelId& id) {
     const SectionSet sections = sectionsOf(host);
 
     const auto isOpenAnywhere = [sections, id] {
@@ -72,7 +61,7 @@ void wirePanelToggle(QPushButton* button, SectionHost* host, const PanelId& id) 
                || sections.top->isOpen(id) || sections.bottom->isOpen(id);
     };
 
-    QObject::connect(button, &QPushButton::clicked, host, [sections, id](const bool checked) {
+    QObject::connect(action, &QAction::triggered, host, [sections, id](const bool checked) {
         if (checked) {
             for (PanelSection* section : {sections.left, sections.right, sections.top, sections.bottom}) {
                 if (section->hasPanel(id)) {
@@ -89,20 +78,26 @@ void wirePanelToggle(QPushButton* button, SectionHost* host, const PanelId& id) 
         }
     });
 
-    const auto refresh = [button, isOpenAnywhere] {
+    const auto refresh = [action, isOpenAnywhere] {
         const bool open = isOpenAnywhere();
-        if (button->isChecked() == open) {
+        if (action->isChecked() == open) {
             return;
         }
-        const QSignalBlocker blocker(button);
-        button->setChecked(open);
+        const QSignalBlocker blocker(action);
+        action->setChecked(open);
     };
 
     for (PanelSection* section : {sections.left, sections.right, sections.top, sections.bottom}) {
-        QObject::connect(section, &PanelSection::panelOpened, button, [refresh](PanelId) { refresh(); });
-        QObject::connect(section, &PanelSection::panelClosed, button, [refresh](PanelId) { refresh(); });
+        QObject::connect(section, &PanelSection::panelOpened, action, [refresh](const PanelId&) { refresh(); });
+        QObject::connect(section, &PanelSection::panelClosed, action, [refresh](const PanelId&) { refresh(); });
     }
     refresh();
+}
+
+QAction* addPanelAction(QMenu* menu, const QString& text) {
+    QAction* action = menu->addAction(text);
+    action->setCheckable(true);
+    return action;
 }
 
 } // namespace
@@ -123,6 +118,7 @@ int main(int argc, char* argv[]) {
     centralLayout->addStretch();
 
     auto* host = new SectionHost(central);
+    host->setCornerOwner(CornerOwner::HorizontalSides);
 
     PanelSection* left = host->section(SectionSide::Left);
     PanelSection* right = host->section(SectionSide::Right);
@@ -148,50 +144,56 @@ int main(int argc, char* argv[]) {
     bottom->addPanel(stateId, new DemoPanel("State", "x(t), v(t), a(t)"));
 
     auto* window = new QWidget;
-    window->setAcceptDrops(true); // swallow drops over the toolbar so Qt does not warn
-    auto* windowLayout = new QVBoxLayout(window);
-    auto* toolbar = new QWidget(window);
-    auto* toolbarLayout = new QHBoxLayout(toolbar);
+    window->setWindowFlag(Qt::FramelessWindowHint);
+    window->setAutoFillBackground(true);
+    window->setAcceptDrops(true); // swallow drops over the chrome so Qt does not warn
 
-    auto* parametersBtn = addToggle(toolbarLayout, "Parameters");
-    auto* controlsBtn = addToggle(toolbarLayout, "Controls");
-    auto* plotsBtn = addToggle(toolbarLayout, "Plots");
-    auto* forcesBtn = addToggle(toolbarLayout, "Forces");
-    auto* stateBtn = addToggle(toolbarLayout, "State");
+    constexpr int resizeMargin = 6;
+    auto* outerLayout = new QVBoxLayout(window);
+    outerLayout->setContentsMargins(resizeMargin, resizeMargin, resizeMargin, resizeMargin);
+    outerLayout->setSpacing(resizeMargin);
 
-    auto* cornersBtn = new QPushButton(QStringLiteral("Corners: top/bottom"), toolbar);
-    toolbarLayout->addWidget(cornersBtn);
-    auto* leftModeBtn = new QPushButton(QStringLiteral("Left: Split"), toolbar);
-    toolbarLayout->addWidget(leftModeBtn);
-    auto* styleBtn = new QPushButton(QStringLiteral("Style: Dark"), toolbar);
-    toolbarLayout->addWidget(styleBtn);
+    auto* titleBar = new TitleBar(window);
+    QMenuBar* menuBar = titleBar->menuBar();
 
-    windowLayout->addWidget(toolbar);
-    windowLayout->addWidget(host, 1);
+    QMenu* panelsMenu = menuBar->addMenu(QStringLiteral("Panels"));
+    QAction* parametersAction = addPanelAction(panelsMenu, QStringLiteral("Parameters"));
+    QAction* controlsAction = addPanelAction(panelsMenu, QStringLiteral("Controls"));
+    QAction* plotsAction = addPanelAction(panelsMenu, QStringLiteral("Plots"));
+    QAction* forcesAction = addPanelAction(panelsMenu, QStringLiteral("Forces"));
+    QAction* stateAction = addPanelAction(panelsMenu, QStringLiteral("State"));
 
-    wirePanelToggle(parametersBtn, host, parametersId);
-    wirePanelToggle(controlsBtn, host, controlsId);
-    wirePanelToggle(plotsBtn, host, plotsId);
-    wirePanelToggle(forcesBtn, host, forcesId);
-    wirePanelToggle(stateBtn, host, stateId);
+    QMenu* viewMenu = menuBar->addMenu(QStringLiteral("View"));
+    QAction* splitAction = viewMenu->addAction(QStringLiteral("Left section split"));
+    splitAction->setCheckable(true);
+    splitAction->setChecked(true);
+    QAction* darkAction = viewMenu->addAction(QStringLiteral("Dark mode"));
+    darkAction->setCheckable(true);
+    darkAction->setChecked(forceDark || QApplication::palette().color(QPalette::Window).lightness() < 128);
 
-    QObject::connect(cornersBtn, &QPushButton::clicked, window, [host, cornersBtn] {
-        const bool sides = host->cornerOwner() == CornerOwner::VerticalSides;
-        host->setCornerOwner(sides ? CornerOwner::HorizontalSides : CornerOwner::VerticalSides);
-        cornersBtn->setText(sides ? QStringLiteral("Corners: left/right") : QStringLiteral("Corners: top/bottom"));
+    QMenu* fileMenu = menuBar->addMenu(QStringLiteral("File"));
+    const QAction* quitAction = fileMenu->addAction(QStringLiteral("Quit"));
+
+    outerLayout->addWidget(titleBar);
+    outerLayout->addWidget(host, 1);
+
+    enableFramelessResize(window, resizeMargin);
+
+    wirePanelToggle(parametersAction, host, parametersId);
+    wirePanelToggle(controlsAction, host, controlsId);
+    wirePanelToggle(plotsAction, host, plotsId);
+    wirePanelToggle(forcesAction, host, forcesId);
+    wirePanelToggle(stateAction, host, stateId);
+
+    QObject::connect(splitAction, &QAction::triggered, window, [left](const bool split) {
+        left->setMode(split ? SectionMode::Split : SectionMode::Exclusive);
     });
 
-    QObject::connect(leftModeBtn, &QPushButton::clicked, window, [left, leftModeBtn] {
-        const bool split = left->mode() == SectionMode::Split;
-        left->setMode(split ? SectionMode::Exclusive : SectionMode::Split);
-        leftModeBtn->setText(split ? QStringLiteral("Left: Split") : QStringLiteral("Left: Exclusive"));
+    QObject::connect(darkAction, &QAction::triggered, window, [](const bool dark) {
+        cad_common::style::apply(dark ? cad_common::StyleMode::Dark : cad_common::StyleMode::Light);
     });
 
-    QObject::connect(styleBtn, &QPushButton::clicked, window, [styleBtn] {
-        const bool toDark = styleBtn->text() == QStringLiteral("Style: Dark");
-        cad_common::style::apply(toDark ? cad_common::StyleMode::Dark : cad_common::StyleMode::Light);
-        styleBtn->setText(toDark ? QStringLiteral("Style: Light") : QStringLiteral("Style: Dark"));
-    });
+    QObject::connect(quitAction, &QAction::triggered, window, [window] { window->close(); });
 
     left->openPanel(parametersId);
     right->openPanel(plotsId);
@@ -208,35 +210,35 @@ int main(int argc, char* argv[]) {
         };
 
         check(host->acceptDrops(), "section host accepts drops (removes drop warning)");
-        check(parametersBtn->isChecked(), "parameters button checked initially");
-        check(plotsBtn->isChecked(), "plots button checked initially");
-        check(!controlsBtn->isChecked(), "controls button unchecked initially");
+        check(parametersAction->isChecked(), "parameters action checked initially");
+        check(plotsAction->isChecked(), "plots action checked initially");
+        check(!controlsAction->isChecked(), "controls action unchecked initially");
         check(left->isOpen(parametersId), "parameters panel open initially");
         check(right->isOpen(plotsId), "plots panel open initially");
 
-        controlsBtn->click();
-        check(controlsBtn->isChecked(), "controls button checked after opening");
+        controlsAction->trigger();
+        check(controlsAction->isChecked(), "controls action checked after opening");
         check(left->isOpen(controlsId), "controls panel open after opening");
 
-        controlsBtn->click();
-        check(!controlsBtn->isChecked(), "controls button unchecked after closing");
+        controlsAction->trigger();
+        check(!controlsAction->isChecked(), "controls action unchecked after closing");
         check(!left->isOpen(controlsId), "controls panel closed after closing");
 
-        parametersBtn->click();
-        check(!parametersBtn->isChecked(), "parameters button unchecked after closing");
+        parametersAction->trigger();
+        check(!parametersAction->isChecked(), "parameters action unchecked after closing");
         check(!left->isOpen(parametersId), "parameters panel closed after closing");
 
         // Simulate a drag move: take the panel out of the left section and open
-        // it in the empty top section; the button must follow the new owner.
+        // it in the empty top section; the action must follow the new owner.
         PanelWidget* moved = left->takePanel(parametersId);
         top->addPanel(parametersId, moved);
         top->openPanel(parametersId);
-        check(parametersBtn->isChecked(), "parameters button checked after moving to top");
+        check(parametersAction->isChecked(), "parameters action checked after moving to top");
         check(!left->isOpen(parametersId), "parameters no longer open in left after move");
         check(top->isOpen(parametersId), "parameters open in top after move");
 
-        parametersBtn->click();
-        check(!parametersBtn->isChecked(), "parameters button unchecked after closing moved panel");
+        parametersAction->trigger();
+        check(!parametersAction->isChecked(), "parameters action unchecked after closing moved panel");
         check(!top->isOpen(parametersId), "parameters closed in new owner after click");
 
         qInfo("self-test %s", ok ? "PASSED" : "FAILED");
@@ -245,14 +247,6 @@ int main(int argc, char* argv[]) {
 
     window->resize(1100, 700);
     window->show();
-
-    if (const int idx = static_cast<int>(args.indexOf(QStringLiteral("--screenshot"))); idx != -1) {
-        const QString path = idx + 1 < args.size() ? args[idx + 1] : QStringLiteral("screenshot.png");
-        QTimer::singleShot(0, &app, [&window, path] {
-            static_cast<void>(window->grab().save(path));
-            QApplication::quit();
-        });
-    }
 
     return QApplication::exec();
 }
