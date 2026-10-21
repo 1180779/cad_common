@@ -3,7 +3,7 @@
  * radoslaw.glasek@theworldlooksback.dev
  */
 
-#include "../include/cad_common/Style.hxx"
+#include <cad_common/style/Style.hxx>
 
 #include <QApplication>
 #include <QColor>

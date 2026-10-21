@@ -3,7 +3,7 @@
  * radoslaw.glasek@theworldlooksback.dev
  */
 
-#include "../include/cad_common/PanelWidget.hxx"
+#include <cad_common/panels/PanelWidget.hxx>
 
 #include <utility>
 

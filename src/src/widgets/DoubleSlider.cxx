@@ -3,7 +3,7 @@
  * radoslaw.glasek@theworldlooksback.dev
  */
 
-#include "../include/cad_common/DoubleSlider.hxx"
+#include <cad_common/widgets/DoubleSlider.hxx>
 
 DoubleSlider::DoubleSlider(QWidget* parent) : QSlider(parent) {
     connect(this, &QSlider::valueChanged, this, &DoubleSlider::notifyValueChanged);

@@ -14,12 +14,12 @@
 #include <string>
 #include <utility>
 
-#include <cad_common/Font.hxx>
-#include <cad_common/PanelSection.hxx>
-#include <cad_common/PanelWidget.hxx>
-#include <cad_common/SectionHost.hxx>
-#include <cad_common/Style.hxx>
-#include <cad_common/TitleBar.hxx>
+#include <cad_common/style/Font.hxx>
+#include <cad_common/panels/PanelSection.hxx>
+#include <cad_common/panels/PanelWidget.hxx>
+#include <cad_common/panels/SectionHost.hxx>
+#include <cad_common/style/Style.hxx>
+#include <cad_common/window/TitleBar.hxx>
 
 namespace {
 

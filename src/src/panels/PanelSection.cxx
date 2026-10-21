@@ -3,7 +3,7 @@
  * radoslaw.glasek@theworldlooksback.dev
  */
 
-#include "../include/cad_common/PanelSection.hxx"
+#include <cad_common/panels/PanelSection.hxx>
 
 #include <algorithm>
 #include <cstddef>
@@ -31,8 +31,8 @@
 #include <QToolButton>
 #include <QVBoxLayout>
 
-#include "../include/cad_common/PanelDrag.hxx"
-#include "../include/cad_common/PanelWidget.hxx"
+#include <cad_common/panels/PanelDrag.hxx>
+#include <cad_common/panels/PanelWidget.hxx>
 
 namespace {
 

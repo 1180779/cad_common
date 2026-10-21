@@ -3,7 +3,7 @@
  * radoslaw.glasek@theworldlooksback.dev
  */
 
-#include "../include/cad_common/SectionHost.hxx"
+#include <cad_common/panels/SectionHost.hxx>
 
 #include <algorithm>
 
@@ -21,8 +21,8 @@
 #include <QSplitter>
 #include <QVBoxLayout>
 
-#include "../include/cad_common/PanelDrag.hxx"
-#include "../include/cad_common/PanelWidget.hxx"
+#include <cad_common/panels/PanelDrag.hxx>
+#include <cad_common/panels/PanelWidget.hxx>
 
 namespace {
 void configureSplitter(QSplitter* splitter) {

@@ -3,7 +3,7 @@
  * radoslaw.glasek@theworldlooksback.dev
  */
 
-#include "../include/cad_common/Font.hxx"
+#include <cad_common/style/Font.hxx>
 
 #include <QApplication>
 #include <QFont>

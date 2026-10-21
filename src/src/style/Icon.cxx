@@ -3,7 +3,7 @@
  * radoslaw.glasek@theworldlooksback.dev
  */
 
-#include "../include/cad_common/Icon.hxx"
+#include <cad_common/style/Icon.hxx>
 
 #include <QDir>
 #include <QFile>

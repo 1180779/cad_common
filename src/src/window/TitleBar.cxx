@@ -3,7 +3,7 @@
  * radoslaw.glasek@theworldlooksback.dev
  */
 
-#include "../include/cad_common/TitleBar.hxx"
+#include <cad_common/window/TitleBar.hxx>
 
 #include <QColor>
 #include <QEvent>
@@ -14,7 +14,7 @@
 #include <QToolButton>
 #include <QWindow>
 
-#include "../include/cad_common/Icon.hxx"
+#include <cad_common/style/Icon.hxx>
 
 namespace {
 
