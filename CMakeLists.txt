@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 4.3)
 project(cad_common LANGUAGES CXX)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
@@ -7,7 +7,7 @@ add_library(cad_common STATIC)
 add_library(cad_common::cad_common ALIAS cad_common)
 
 set_target_properties(cad_common PROPERTIES AUTOMOC ON AUTORCC ON)
-target_compile_features(cad_common PUBLIC cxx_std_20)
+target_compile_features(cad_common PUBLIC cxx_std_23)
 target_include_directories(cad_common PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include>
         $<INSTALL_INTERFACE:include>
