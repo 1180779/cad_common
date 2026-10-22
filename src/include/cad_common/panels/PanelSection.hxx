@@ -62,6 +62,9 @@ public:
     /// open. Returns the panel (still caller-owned) or <tt>nullptr</tt>
     [[nodiscard]] PanelWidget* takePanel(const PanelId& id);
 
+    /// @brief Close all open panels of this section
+    void closeAllPanels();
+    
     void openPanel(const PanelId& id);
     void closePanel(const PanelId& id);
     void togglePanel(const PanelId& id);

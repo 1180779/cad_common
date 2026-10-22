@@ -209,6 +209,23 @@ PanelWidget* PanelSection::takePanel(const PanelId& id) {
     return panel;
 }
 
+void PanelSection::closeAllPanels() {
+    if (!m_open.empty()) {
+        return;
+    }
+    // copy the values since they will be erased at use site
+    const auto closedIds = m_open | std::ranges::views::keys | std::ranges::to<std::vector>();
+    for (const auto& slot : m_open | std::views::values) {
+        slot->setContent(nullptr, PanelId());
+        slot->hide();
+    }
+    m_open.clear();
+    updateVisibility();
+    for (const auto& id : closedIds) {
+        emit panelClosed(id);
+    }
+}
+
 void PanelSection::openPanel(const PanelId& id) {
     const auto it = m_panels.find(id);
     if (it == m_panels.end()) {
