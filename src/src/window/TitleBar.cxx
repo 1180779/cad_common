@@ -130,7 +130,7 @@ private:
 
 } // namespace
 
-TitleBar::TitleBar(QWidget* parent)
+cadc::TitleBar::TitleBar(QWidget* parent)
     : QWidget(parent) {
     setObjectName(QStringLiteral("windowTitleBar"));
     setFixedHeight(gc_titleBarHeight);
@@ -163,11 +163,11 @@ TitleBar::TitleBar(QWidget* parent)
     connect(m_closeButton, &QToolButton::clicked, this, [this] { window()->close(); });
 }
 
-QMenuBar* TitleBar::menuBar() const {
+QMenuBar* cadc::TitleBar::menuBar() const {
     return m_menuBar;
 }
 
-void TitleBar::mousePressEvent(QMouseEvent* event) {
+void cadc::TitleBar::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         // take over the press only if the platform actually began the move
         if (QWindow* handle = window()->windowHandle(); handle && handle->startSystemMove()) {
@@ -177,7 +177,7 @@ void TitleBar::mousePressEvent(QMouseEvent* event) {
     QWidget::mousePressEvent(event);
 }
 
-void TitleBar::mouseDoubleClickEvent(QMouseEvent* event) {
+void cadc::TitleBar::mouseDoubleClickEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         toggleMaximized();
         return;
@@ -185,7 +185,7 @@ void TitleBar::mouseDoubleClickEvent(QMouseEvent* event) {
     QWidget::mouseDoubleClickEvent(event);
 }
 
-bool TitleBar::event(QEvent* event) {
+bool cadc::TitleBar::event(QEvent* event) {
     if (event->type() == QEvent::WindowStateChange) {
         updateMaximizeButton();
     } else if (event->type() == QEvent::PaletteChange) {
@@ -194,7 +194,7 @@ bool TitleBar::event(QEvent* event) {
     return QWidget::event(event);
 }
 
-bool TitleBar::eventFilter(QObject* watched, QEvent* event) {
+bool cadc::TitleBar::eventFilter(QObject* watched, QEvent* event) {
     if (watched == m_closeButton) {
         // white glyph on the red hover/press background
         if (event->type() == QEvent::Enter) {
@@ -207,7 +207,7 @@ bool TitleBar::eventFilter(QObject* watched, QEvent* event) {
     return QWidget::eventFilter(watched, event);
 }
 
-void TitleBar::toggleMaximized() const {
+void cadc::TitleBar::toggleMaximized() const {
     QWidget* w = window();
     if (w->isMaximized()) {
         w->showNormal();
@@ -217,13 +217,13 @@ void TitleBar::toggleMaximized() const {
     updateMaximizeButton();
 }
 
-void TitleBar::updateMaximizeButton() const {
+void cadc::TitleBar::updateMaximizeButton() const {
     m_maxButton->setIcon(cad_common::recoloredIcon(
         window()->isMaximized() ? QStringLiteral("window-restore") : QStringLiteral("window-maximize"),
         windowTextColor(m_maxButton)));
 }
 
-void TitleBar::refreshButtonIcons() const {
+void cadc::TitleBar::refreshButtonIcons() const {
     m_minButton->setIcon(
         cad_common::recoloredIcon(QStringLiteral("window-minimize"), windowTextColor(m_minButton)));
     m_closeButton->setIcon(cad_common::recoloredIcon(
@@ -232,7 +232,7 @@ void TitleBar::refreshButtonIcons() const {
     updateMaximizeButton();
 }
 
-void enableFramelessResize(QWidget* window, const int margin) {
+void cadc::enableFramelessResize(QWidget* window, const int margin) {
     window->setMouseTracking(true);
     window->installEventFilter(new FramelessResizeFilter(window, margin));
 }

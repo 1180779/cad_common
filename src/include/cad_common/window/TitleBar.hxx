@@ -11,6 +11,8 @@
 class QMenuBar;
 class QToolButton;
 
+namespace cadc {
+
 /// @brief IntelliJ-style unified title bar for a frameless window
 ///
 /// Hosts a menu bar on the left and minimize / maximize / close controls on the
@@ -48,5 +50,7 @@ private:
 /// Watches the @p margin-wide border for hover/press and drives the platform's
 /// native system-resize, so a FramelessWindowHint window stays resizable
 void enableFramelessResize(QWidget* window, int margin = 6);
+
+} // namespace cadc
 
 #endif // CAD_COMMON_HEADER_SRC_INCLUDE_CAD_COMMON_TITLE_BAR_HXX
